@@ -4,38 +4,53 @@
 import time
 import board
 import adafruit_dht
+import argparse
+import os
 from helpers.watson_iot_platform import IBMWatsonIoTPlatform
+from dotenv import load_dotenv
 
-# Initial the dht device, with data pin connected to:
-dhtDevice = adafruit_dht.DHT11(board.D26)
+load_dotenv()
 
-# Create object for Watson IoT Platform tasks
-iot_platform = IBMWatsonIoTPlatform()
+parser = argparse.ArgumentParser(
+    prog="server.py",
+    description='Reads DHT sensors and prints the output. Optionally sends the outputs to the Watson IoT Platform (requires service credentials in .env).',
+    usage='python3 %(prog)s [options]')
+
+parser.add_argument('--pin', help='The PIN Number your DHT is connected to')
+parser.add_argument('--watson', action='store_true', help="Sends outputs of the sensor to the Watson IoT Platform (requires service credentials in .env)")
+parser.set_defaults(watson=False)
+
+args = parser.parse_args()
+
+pin = args.pin or os.getenv("DHT_SENSOR_PIN")
+enable_watson = args.watson or os.getenv(
+    'ENABLE_WATSON_IOT_PLATFORM', 'False') == 'True'
+
+dht_device = adafruit_dht.DHT11(pin)
+iot_platform = IBMWatsonIoTPlatform() if enable_watson else None
 
 while True:
     try:
         # Print the values to the serial port
-        temperature_c = dhtDevice.temperature
+        temperature_c = dht_device.temperature
         temperature_f = temperature_c * (9 / 5) + 32
-        humidity = dhtDevice.humidity
-        
-        # publish temp message
-        iot_platform.publish(
-            event="dht11", 
-            property="temperature", 
-            value=temperature_c)
+        humidity = dht_device.humidity
 
-        # publish humidity message
-        iot_platform.publish(
-            event="dht11", 
-            property="humidity", 
-            value=humidity)
+        # publish temp message
+        if iot_platform:
+            iot_platform.publish(
+                event="dht11",
+                property="temperature",
+                value=temperature_c)
+
+            # publish humidity message
+            iot_platform.publish(
+                event="dht11",
+                property="humidity",
+                value=humidity)
 
         print(
-            "Temp: {:.1f} F / {:.1f} C    Humidity: {}% ".format(
-                temperature_f, temperature_c, humidity
-            )
-        )
+            f"Temp: {temperature_f} F / {temperature_c} C    Humidity: {humidity}%")
 
     except RuntimeError as error:
         # Errors happen fairly often, DHT's are hard to read, just keep going
@@ -43,7 +58,7 @@ while True:
         time.sleep(2.0)
         continue
     except Exception as error:
-        dhtDevice.exit()
+        dht_device.exit()
         raise error
 
     time.sleep(2.0)
