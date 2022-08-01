@@ -12,7 +12,7 @@ class IBMWatsonIoTPlatform:
         self.device_id = os.getenv('WATSON_IOT_DEVICE_ID')
         self.token = os.getenv('WATSON_IOT_TOKEN')
         
-        # Set mqtt variables
+        # set mqtt variables
         self.server = f"{self.org}.messaging.internetofthings.ibmcloud.com"
         self.auth_method = "use-token-auth"
         self.client_id = f"d:{self.org}:{self.device_type}:{self.device_id}"
