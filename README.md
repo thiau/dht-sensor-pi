@@ -28,6 +28,16 @@ Run the following command:
 
 `python3 server.py --pin <SENSOR_PIN_NUMBER> --watson`
 
+The properties used on this application are:
+
+Temperature
+- Event: `dht11`
+- Property: `temperature`
+
+Humidity
+- Event: `dht11`
+- Property: `humidity`
+
 Learn more about how to setup your device on Watson IoT Platform account using [this tutorial](https://iotdesignpro.com/projects/how-to-send-sensor-data-to-ibm-watson-cloud-platform-using-raspberry-pi).
 
 ## How to run it using an `.env` file
