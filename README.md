@@ -49,7 +49,7 @@ Create a `.env` file in the root folder of this repository with the following va
 
 ```
 # application properties
-DHT_SENSOR_PIN = SENSOR_PIN_NUMBER
+SENSOR_PIN = SENSOR_PIN_NUMBER
 ENABLE_WATSON_IOT_PLATFORM = TRUE_OR_FALSE
 
 # watson iof platform properties
