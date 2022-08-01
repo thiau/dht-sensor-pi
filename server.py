@@ -2,7 +2,6 @@
 # https://learn.adafruit.com/dht-humidity-sensing-on-raspberry-pi-with-gdocs-logging/python-setup
 
 import time
-import board
 import adafruit_dht
 import argparse
 import os
@@ -22,7 +21,7 @@ parser.set_defaults(watson=False)
 
 args = parser.parse_args()
 
-pin = args.pin or os.getenv("DHT_SENSOR_PIN")
+pin = args.pin or os.getenv("SENSOR_PIN")
 enable_watson = args.watson or os.getenv(
     'ENABLE_WATSON_IOT_PLATFORM', 'False') == 'True'
 
